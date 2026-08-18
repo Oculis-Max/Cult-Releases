@@ -16,10 +16,18 @@ if ! docker image inspect cult-memory >/dev/null 2>&1; then
   docker build -t cult-memory .
 fi
 
-read -rsp 'CockroachDB password: ' PASSWORD
-echo
+PASSWORD="${COCKROACH_PASSWORD:-}"
+if [[ -z "$PASSWORD" ]]; then
+  read -rsp 'CockroachDB password: ' PASSWORD
+  echo
+fi
+if [[ -z "$PASSWORD" ]]; then
+  echo '❌ CockroachDB password is required.'
+  exit 1
+fi
+
 ENCODED_PASSWORD="$(P="$PASSWORD" python3 -c 'import os, urllib.parse; print(urllib.parse.quote(os.environ["P"], safe=""))')"
-unset PASSWORD
+unset PASSWORD COCKROACH_PASSWORD
 COCKROACH_URL="postgresql://${USER_NAME}:${ENCODED_PASSWORD}@${HOST}:${PORT}/${DB_NAME}?sslmode=require"
 unset ENCODED_PASSWORD
 
