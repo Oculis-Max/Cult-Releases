@@ -24,7 +24,7 @@ ENV PORT=8080 \
     CULT_BIN=/usr/local/bin/cult \
     CULT_WORKFLOW=/app/workflow.cult \
     CULT_REQUIRED=true \
-    AWS_REGION=us-east-1 \
+    AWS_REGION=ap-south-1 \
     BEDROCK_MODEL_ID=amazon.nova-lite-v1:0 \
     BEDROCK_EMBED_MODEL_ID=amazon.titan-embed-text-v2:0
 EXPOSE 8080
