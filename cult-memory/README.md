@@ -54,6 +54,7 @@ The skill is referenced from its upstream repository at runtime rather than copi
 - **Amazon Nova Lite** performs agent reasoning.
 - **Amazon Titan Text Embeddings V2** creates normalized 256-dimensional vectors for memory storage and retrieval.
 - Bedrock authentication uses `AWS_BEARER_TOKEN_BEDROCK`; credentials are never stored in source.
+- The judged deployment defaults to **AWS Mumbai (`ap-south-1`)**, matching the CockroachDB cluster region.
 
 ## Cult integration
 
@@ -81,7 +82,7 @@ Requirements:
 ```bash
 export COCKROACH_URL='postgresql://...'
 export AWS_BEARER_TOKEN_BEDROCK='...'
-export AWS_REGION='us-east-1'
+export AWS_REGION='ap-south-1'
 
 go run .
 ```
@@ -97,7 +98,7 @@ docker build -t cult-memory .
 docker run --rm -p 8080:8080 \
   -e COCKROACH_URL \
   -e AWS_BEARER_TOKEN_BEDROCK \
-  -e AWS_REGION=us-east-1 \
+  -e AWS_REGION=ap-south-1 \
   cult-memory
 ```
 
@@ -130,7 +131,7 @@ The Docker image downloads the public Cult V1 Linux binary at build time and kee
 |---|---:|---|
 | `COCKROACH_URL` | Yes | - |
 | `AWS_BEARER_TOKEN_BEDROCK` | Yes | - |
-| `AWS_REGION` | No | `us-east-1` |
+| `AWS_REGION` | No | `ap-south-1` |
 | `BEDROCK_MODEL_ID` | No | `amazon.nova-lite-v1:0` |
 | `BEDROCK_EMBED_MODEL_ID` | No | `amazon.titan-embed-text-v2:0` |
 | `CULT_BIN` | No | `cult` |
