@@ -1,0 +1,29 @@
+name: Cult Memory Smoke Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      COCKROACH_PASSWORD: ${{ secrets.COCKROACH_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify secret exists
+        shell: bash
+        run: |
+          if [[ -z "$COCKROACH_PASSWORD" ]]; then
+            echo "COCKROACH_PASSWORD repository secret is missing"
+            exit 1
+          fi
+
+      - name: Run end-to-end Cult Memory smoke test
+        shell: bash
+        run: bash cult-memory/demo-smoke.sh
