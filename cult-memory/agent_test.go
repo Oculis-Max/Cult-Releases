@@ -28,12 +28,12 @@ func TestDurableCandidateRejectsSecrets(t *testing.T) {
 	}
 }
 
-func TestLocalRespondUsesOnlyRecalledApprovedContext(t *testing.T) {
-	got := localRespond("What do you remember about our stack?", []memory{{Content: "Our production API uses Go", Approved: true}})
+func TestLocalRespondUsesRecalledContext(t *testing.T) {
+	got := localRespond("Summarize previous context", []memory{{Content: "Our production API uses Go", Approved: true}})
 	if got.Answer == "" {
 		t.Fatal("expected a response")
 	}
 	if got.ShouldRemember {
-		t.Fatal("question alone should not create a new durable memory")
+		t.Fatal("non-durable request should not create a new memory")
 	}
 }
