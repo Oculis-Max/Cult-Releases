@@ -33,7 +33,7 @@ func newBedrockClient() (*bedrockClient, error) {
 	}
 	return &bedrockClient{
 		token:      token,
-		region:     env("AWS_REGION", "us-east-1"),
+		region:     env("AWS_REGION", "ap-south-1"),
 		model:      env("BEDROCK_MODEL_ID", "amazon.nova-lite-v1:0"),
 		embedModel: env("BEDROCK_EMBED_MODEL_ID", "amazon.titan-embed-text-v2:0"),
 		http:       &http.Client{Timeout: 30 * time.Second},
@@ -117,7 +117,6 @@ APPROVED PERSISTENT MEMORY:
 	text = stripJSONFence(text)
 	var result agentResult
 	if err := json.Unmarshal([]byte(text), &result); err != nil {
-		// Preserve a useful answer while failing closed on memory writes.
 		return agentResult{Answer: text, ShouldRemember: false}, nil
 	}
 	result.Answer = strings.TrimSpace(result.Answer)
