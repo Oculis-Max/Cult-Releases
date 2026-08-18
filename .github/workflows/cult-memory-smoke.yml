@@ -2,6 +2,11 @@ name: Cult Memory Smoke Test
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cult-memory-smoke.yml'
+      - 'cult-memory/**'
 
 permissions:
   contents: read
