@@ -19,11 +19,11 @@ import (
 var webFS embed.FS
 
 type app struct {
-	store    *memoryStore
-	bedrock  *bedrockClient
-	cult     *cultGate
-	skill    *cockroachSkill
-	started  time.Time
+	store   *memoryStore
+	agent   *agentClient
+	cult    *cultGate
+	skill   *cockroachSkill
+	started time.Time
 }
 
 type chatRequest struct {
@@ -38,6 +38,7 @@ type chatResponse struct {
 	Recalled       []memory `json:"recalled"`
 	CultValidated  bool     `json:"cult_validated"`
 	SkillValidated bool     `json:"skill_validated"`
+	AgentProvider  string   `json:"agent_provider"`
 }
 
 type decisionRequest struct {
@@ -68,12 +69,13 @@ func main() {
 		log.Printf("cockroach skill EXPLAIN warning: %v", err)
 	}
 
-	bedrock, err := newBedrockClient()
+	agent, err := newAgentClient()
 	if err != nil {
-		log.Fatalf("bedrock: %v", err)
+		log.Fatalf("agent provider: %v", err)
 	}
+	log.Printf("agent provider: %s", agent.provider())
 
-	a := &app{store: store, bedrock: bedrock, cult: cult, skill: skill, started: time.Now().UTC()}
+	a := &app{store: store, agent: agent, cult: cult, skill: skill, started: time.Now().UTC()}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", a.health)
 	mux.HandleFunc("POST /api/chat", a.chat)
@@ -107,7 +109,7 @@ func (a *app) health(w http.ResponseWriter, r *http.Request) {
 
 	dbOK := a.store.ping(ctx) == nil
 	status := http.StatusOK
-	if !dbOK || !a.cult.ready() || !a.bedrock.ready() {
+	if !dbOK || !a.cult.ready() || !a.agent.ready() {
 		status = http.StatusServiceUnavailable
 	}
 	writeJSON(w, status, map[string]any{
@@ -116,7 +118,7 @@ func (a *app) health(w http.ResponseWriter, r *http.Request) {
 		"cockroachdb_connected": dbOK,
 		"vector_index":          a.store.vectorIndexReady(),
 		"agent_skill_loaded":    a.skill.ready(),
-		"bedrock_configured":    a.bedrock.ready(),
+		"agent_provider":        a.agent.provider(),
 		"uptime_seconds":        int(time.Since(a.started).Seconds()),
 	})
 }
@@ -146,7 +148,7 @@ func (a *app) chat(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 35*time.Second)
 	defer cancel()
 
-	queryVector, err := a.bedrock.embed(ctx, req.Message)
+	queryVector, err := a.agent.embed(ctx, req.Message)
 	if err != nil {
 		writeError(w, http.StatusBadGateway, fmt.Errorf("embed query: %w", err))
 		return
@@ -158,7 +160,7 @@ func (a *app) chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := a.bedrock.respond(ctx, req.Message, recalled)
+	result, err := a.agent.respond(ctx, req.Message, recalled)
 	if err != nil {
 		writeError(w, http.StatusBadGateway, fmt.Errorf("agent response: %w", err))
 		return
@@ -166,7 +168,7 @@ func (a *app) chat(w http.ResponseWriter, r *http.Request) {
 
 	var proposal *memory
 	if result.ShouldRemember && strings.TrimSpace(result.ProposedMemory) != "" {
-		proposalVector, err := a.bedrock.embed(ctx, result.ProposedMemory)
+		proposalVector, err := a.agent.embed(ctx, result.ProposedMemory)
 		if err != nil {
 			writeError(w, http.StatusBadGateway, fmt.Errorf("embed proposed memory: %w", err))
 			return
@@ -185,6 +187,7 @@ func (a *app) chat(w http.ResponseWriter, r *http.Request) {
 		Recalled:       recalled,
 		CultValidated:  a.cult.ready(),
 		SkillValidated: a.skill.ready(),
+		AgentProvider:  a.agent.provider(),
 	})
 }
 
