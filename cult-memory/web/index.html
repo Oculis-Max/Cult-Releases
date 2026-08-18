@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cult Memory</title>
+  <style>
+    :root{--bg:#090b0e;--panel:#11151a;--line:#29313a;--text:#f4f5f6;--muted:#9099a5;--orange:#ff4b0b;--purple:#8b5cf6;--green:#22c55e}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% -10%,#281106 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+    .shell{max-width:1180px;margin:auto;padding:24px}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}.brand{display:flex;gap:13px;align-items:center}.seal{width:46px;height:46px;border:2px solid var(--orange);border-radius:50%;display:grid;place-items:center;color:var(--orange);font-weight:900}.brand h1{font-size:26px;letter-spacing:.08em;margin:0}.brand small{display:block;color:var(--muted);letter-spacing:.08em}.status{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.pill{border:1px solid var(--line);background:#0d1116;border-radius:999px;padding:7px 10px;color:var(--muted);font-size:12px}.pill.ok{border-color:#1f6b3b;color:#8cf0ad}.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px}.panel{background:rgba(17,21,26,.94);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.25)}
+    .hero{padding:24px;border-bottom:1px solid var(--line);background:linear-gradient(110deg,rgba(255,75,11,.12),transparent 45%)}.eyebrow{color:var(--orange);font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}.hero h2{font-size:32px;margin:7px 0 8px;line-height:1.08}.hero p{color:var(--muted);max-width:700px;margin:0}.flow{margin-top:18px;color:#c9cfd6;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}.flow b{color:var(--purple)}
+    .chat{height:510px;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:13px}.msg{max-width:82%;padding:13px 15px;border-radius:15px;white-space:pre-wrap}.msg.user{margin-left:auto;background:#262d35}.msg.agent{background:#171c22;border:1px solid #303943}.msg.agent:before{content:'CULT MEMORY';display:block;color:var(--orange);font-size:10px;letter-spacing:.16em;font-weight:800;margin-bottom:6px}.recalled{font-size:12px;color:#b7a6ff;margin-top:8px}.composer{padding:16px;border-top:1px solid var(--line);display:flex;gap:10px}.composer textarea{flex:1;resize:none;min-height:50px;max-height:140px;border:1px solid var(--line);background:#0c1014;color:var(--text);border-radius:13px;padding:13px;outline:none}.composer textarea:focus{border-color:#6340bd}.btn{border:0;border-radius:12px;padding:11px 15px;background:var(--orange);color:#fff;font-weight:800;cursor:pointer}.btn.secondary{background:#232a32;color:#d8dde3}.btn.ghost{background:transparent;border:1px solid var(--line);color:#c9cfd6}.btn:disabled{opacity:.45;cursor:not-allowed}
+    .side-head{padding:19px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.side-head h3{margin:0;font-size:15px;letter-spacing:.05em}.memories{padding:13px;max-height:690px;overflow:auto}.memory{border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px;background:#0d1116}.memory.approved{border-color:#205d37}.memory.pending{border-color:#5b3f21}.memory .state{font-size:10px;letter-spacing:.15em;font-weight:900;text-transform:uppercase;margin-bottom:6px}.approved .state{color:#71db93}.pending .state{color:#ff9b62}.memory p{margin:0 0 9px;color:#d8dde3}.memory small{color:var(--muted)}.actions{display:flex;gap:7px;margin-top:10px}.actions button{font-size:12px;padding:7px 10px}.empty{padding:25px;color:var(--muted);text-align:center}.footer{margin-top:16px;color:#69737e;font-size:12px;text-align:center}.dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:#666;margin-right:6px}.ok .dot{background:var(--green)}
+    @media(max-width:850px){.shell{padding:13px}.top{align-items:flex-start}.grid{grid-template-columns:1fr}.side{order:-1}.memories{max-height:250px}.chat{height:430px}.hero h2{font-size:27px}.status{max-width:180px}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div class="brand"><div class="seal">✓</div><div><h1>{ CULT }</h1><small>MEMORY / AGENTIC PERSISTENCE</small></div></div>
+    <div class="status" id="status"><span class="pill">Checking system…</span></div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="hero">
+        <div class="eyebrow">Cult × CockroachDB × AWS</div>
+        <h2>An agent that remembers — only with your approval.</h2>
+        <p>Approved facts survive new sessions. Proposed memories stay quarantined until a human explicitly approves them.</p>
+        <div class="flow"><b>request</b> → vector recall → Bedrock reasoning → memory proposal → <b>human approval</b> → persistent recall</div>
+      </div>
+      <div class="chat" id="chat">
+        <div class="msg agent">Tell me something useful about you, your project, or a decision you want remembered. I may propose a durable memory, but I cannot approve it myself.</div>
+      </div>
+      <div class="composer">
+        <textarea id="input" placeholder="Example: Remember that our production API uses Go and we prefer explicit human approval before deployments."></textarea>
+        <button class="btn" id="send">Send</button>
+      </div>
+    </section>
+
+    <aside class="panel side">
+      <div class="side-head"><h3>PERSISTENT MEMORY</h3><button class="btn ghost" id="newSession">New session</button></div>
+      <div class="memories" id="memories"><div class="empty">No memories yet.</div></div>
+    </aside>
+  </div>
+  <div class="footer">BUILT TO SOLVE. DESIGNED TO SCALE. · Memory is data, not authority.</div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const userKey='cult-memory-user';
+const sessionKey='cult-memory-session';
+const uuid=()=>crypto.randomUUID?crypto.randomUUID():(Date.now().toString(16)+Math.random().toString(16).slice(2));
+const userId=localStorage.getItem(userKey)||uuid(); localStorage.setItem(userKey,userId);
+let sessionId=sessionStorage.getItem(sessionKey)||uuid(); sessionStorage.setItem(sessionKey,sessionId);
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function addMessage(kind,text,recalled=[]){const el=document.createElement('div');el.className='msg '+kind;el.innerHTML=esc(text);if(recalled.length){const r=document.createElement('div');r.className='recalled';r.textContent='↳ recalled '+recalled.length+' approved memor'+(recalled.length===1?'y':'ies');el.appendChild(r)}$('#chat').appendChild(el);$('#chat').scrollTop=$('#chat').scrollHeight}
+async function api(path,opts={}){const res=await fetch(path,{headers:{'Content-Type':'application/json'},...opts});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||('HTTP '+res.status));return data}
+async function health(){try{const h=await api('/api/health');const defs=[['Cult',h.cult_workflow_valid],['CockroachDB',h.cockroachdb_connected],['Vector index',h.vector_index],['Agent Skill',h.agent_skill_loaded],['Bedrock',h.bedrock_configured]];$('#status').innerHTML=defs.map(([n,v])=>`<span class="pill ${v?'ok':''}"><i class="dot"></i>${n}</span>`).join('')}catch(e){$('#status').innerHTML='<span class="pill">System unavailable</span>'}}
+async function loadMemories(){try{const d=await api('/api/memories?user_id='+encodeURIComponent(userId));renderMemories(d.memories||[])}catch(e){$('#memories').innerHTML='<div class="empty">'+esc(e.message)+'</div>'}}
+function renderMemories(items){if(!items.length){$('#memories').innerHTML='<div class="empty">No memories yet.</div>';return}$('#memories').innerHTML=items.map(m=>`<div class="memory ${m.approved?'approved':'pending'}"><div class="state">${m.approved?'Approved memory':'Awaiting human approval'}</div><p>${esc(m.content)}</p><small>${new Date(m.created_at).toLocaleString()}</small>${m.approved?'':`<div class="actions"><button class="btn" onclick="decide('${m.id}',true)">Approve</button><button class="btn secondary" onclick="decide('${m.id}',false)">Reject</button></div>`}</div>`).join('')}
+async function decide(id,approve){try{await api(`/api/memories/${id}/${approve?'approve':'reject'}`,{method:'POST',body:JSON.stringify({user_id:userId})});await loadMemories();addMessage('agent',approve?'Memory approved. It can now be recalled in future sessions.':'Memory rejected. It will not influence future sessions.')}catch(e){addMessage('agent','Decision failed: '+e.message)}}
+window.decide=decide;
+async function send(){const input=$('#input');const message=input.value.trim();if(!message)return;input.value='';$('#send').disabled=true;addMessage('user',message);const typing=document.createElement('div');typing.className='msg agent';typing.textContent='Reasoning with approved persistent memory…';$('#chat').appendChild(typing);try{const d=await api('/api/chat',{method:'POST',body:JSON.stringify({user_id:userId,session_id:sessionId,message})});typing.remove();addMessage('agent',d.answer,d.recalled||[]);if(d.proposal){addMessage('agent','I proposed a new memory. It is NOT active until you approve it in the memory panel.');await loadMemories()}}catch(e){typing.remove();addMessage('agent','Request failed: '+e.message)}finally{$('#send').disabled=false;input.focus()}}
+$('#send').onclick=send;$('#input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});$('#newSession').onclick=()=>{sessionId=uuid();sessionStorage.setItem(sessionKey,sessionId);$('#chat').innerHTML='';addMessage('agent','New session started. Your approved memories remain available; pending memories still require approval.')};
+health();loadMemories();
+</script>
+</body>
+</html>
